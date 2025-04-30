@@ -1,5 +1,5 @@
 // Configuration
-const BOT_API_URL = 'http://154.90.172.50:5154'; // Adresse IP et port du bot sur KataBump
+const BOT_API_URL = 'http://154.90.172.50:5154'; // Retour au HTTP explicite
 
 // Structure des données
 let products = [
@@ -115,8 +115,27 @@ let cart = [];
 // Captcha simple
 let captchaResult = 0;
 
+// Fonction de débogage pour vérifier les erreurs de connexion
+function testAPIConnection() {
+    console.log("Test de connexion à l'API...");
+    fetch(`${BOT_API_URL}/api/status`)
+        .then(response => {
+            console.log("Réponse reçue:", response);
+            return response.json();
+        })
+        .then(data => {
+            console.log("Données:", data);
+        })
+        .catch(error => {
+            console.error("Erreur détaillée:", error);
+        });
+}
+
 // Initialisation
 document.addEventListener('DOMContentLoaded', function() {
+    // Test de connexion à l'API
+    testAPIConnection();
+    
     // Charger les produits
     renderProducts();
     
