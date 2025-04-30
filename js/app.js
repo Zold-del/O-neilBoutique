@@ -1,5 +1,5 @@
 // Configuration
-const BOT_API_URL = 'https://votre-bot-ktabump.xyz'; // Remplacez par l'URL où votre bot Discord sera hébergé sur ktabump
+const BOT_API_URL = 'http://control.katabump.com/server/4f262838'; // URL du bot Discord hébergé sur KataBump
 
 // Structure des données
 let products = [
