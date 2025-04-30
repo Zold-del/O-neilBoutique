@@ -1,13 +1,11 @@
 // Configuration
-const BOT_API_URL = 'http://154.90.172.50:5154'; // Adresse IP de KataBump
+// Utiliser un proxy CORS pour contourner les restrictions de contenu mixte
+// Ce service gratuit convertit les requêtes HTTP en HTTPS
+const BOT_API_URL = 'https://corsproxy.io/?http://154.90.172.50:5154';
 
 // Ajout d'une fonction pour vérifier les problèmes de connexion mixte HTTP/HTTPS
 function checkMixedContentIssue() {
-  if (window.location.protocol === 'https:' && BOT_API_URL.startsWith('http:')) {
-    console.warn("Problème de contenu mixte détecté: Site en HTTPS tentant d'accéder à une API en HTTP.");
-    console.warn("Solution 1: Désactivez temporairement la protection du contenu mixte dans votre navigateur.");
-    console.warn("Solution 2: Configurez un proxy HTTPS pour votre API.");
-  }
+  console.log("Tentative de connexion via proxy CORS...");
 }
 
 // Fonction de débogage pour tester directement l'API
