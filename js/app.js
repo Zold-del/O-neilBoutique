@@ -1,5 +1,5 @@
 // Configuration
-const BOT_API_URL = 'http://control.katabump.com/server/4f262838'; // URL du bot Discord hébergé sur KataBump
+const BOT_API_URL = 'http://154.90.172.50:5154'; // Adresse IP et port du bot sur KataBump
 
 // Structure des données
 let products = [
