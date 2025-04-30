@@ -1,5 +1,40 @@
 // Configuration
-const BOT_API_URL = 'http://154.90.172.50:5154'; // Retour au HTTP explicite
+const BOT_API_URL = 'http://154.90.172.50:5154'; // Adresse IP de KataBump
+
+// Ajout d'une fonction pour vérifier les problèmes de connexion mixte HTTP/HTTPS
+function checkMixedContentIssue() {
+  if (window.location.protocol === 'https:' && BOT_API_URL.startsWith('http:')) {
+    console.warn("Problème de contenu mixte détecté: Site en HTTPS tentant d'accéder à une API en HTTP.");
+    console.warn("Solution 1: Désactivez temporairement la protection du contenu mixte dans votre navigateur.");
+    console.warn("Solution 2: Configurez un proxy HTTPS pour votre API.");
+  }
+}
+
+// Fonction de débogage pour tester directement l'API
+async function pingBotAPI() {
+  try {
+    console.log(`Tentative de connexion à ${BOT_API_URL}/api/status...`);
+    const response = await fetch(`${BOT_API_URL}/api/status`, {
+      mode: 'cors',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+    
+    console.log("Status de la réponse:", response.status);
+    if (response.ok) {
+      const data = await response.json();
+      console.log("Données reçues:", data);
+      return true;
+    } else {
+      console.error("Erreur API:", response.statusText);
+      return false;
+    }
+  } catch (error) {
+    console.error("Erreur de connexion:", error.message);
+    return false;
+  }
+}
 
 // Structure des données
 let products = [
@@ -133,8 +168,17 @@ function testAPIConnection() {
 
 // Initialisation
 document.addEventListener('DOMContentLoaded', function() {
-    // Test de connexion à l'API
-    testAPIConnection();
+    // Vérifier les problèmes de contenu mixte
+    checkMixedContentIssue();
+    
+    // Tester la connexion à l'API
+    pingBotAPI().then(success => {
+      if (!success) {
+        console.log("Échec du test de connexion à l'API. Utilisation des données locales.");
+      } else {
+        console.log("Connexion à l'API réussie!");
+      }
+    });
     
     // Charger les produits
     renderProducts();
@@ -155,21 +199,30 @@ document.addEventListener('DOMContentLoaded', function() {
     checkActivePromotions();
 });
 
-// Vérifier le statut du bot Discord
+// Vérifier le statut du bot Discord - version améliorée avec fallback
 async function checkBotStatus() {
     try {
-        const response = await fetch(`${BOT_API_URL}/api/status`);
-        const data = await response.json();
+        const response = await fetch(`${BOT_API_URL}/api/status`, {
+            mode: 'cors',
+            headers: {
+              'Content-Type': 'application/json'
+            }
+        });
         
         const statusDot = document.getElementById('bot-status-dot');
         const statusText = document.getElementById('bot-status');
         
-        if (data.status === 'online') {
-            statusDot.className = 'status-dot status-online';
-            statusText.textContent = 'Connecté au serveur';
+        if (response.ok) {
+            const data = await response.json();
+            if (data && data.status === 'online') {
+                statusDot.className = 'status-dot status-online';
+                statusText.textContent = 'Connecté au serveur';
+            } else {
+                statusDot.className = 'status-dot status-offline';
+                statusText.textContent = 'Serveur disponible mais bot hors ligne';
+            }
         } else {
-            statusDot.className = 'status-dot status-offline';
-            statusText.textContent = 'Déconnecté du serveur';
+            throw new Error('Statut HTTP: ' + response.status);
         }
     } catch (error) {
         console.error('Erreur lors de la vérification du statut du bot:', error);
